@@ -1,4 +1,5 @@
 mod db;
+mod plugin_runtime;
 
 use db::{DbManager, ItemRow};
 use std::fs;

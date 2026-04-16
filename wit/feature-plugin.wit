@@ -1,0 +1,15 @@
+package ensembly:plugin@0.1.0;
+
+/// Functions the host exposes to every Feature Plugin.
+interface host {
+    /// Write a log line to the host's output.
+    log: func(level: string, message: string);
+    /// Fetch a single item JSON by id. Returns an empty string if not found.
+    get-item: func(id: string) -> string;
+}
+
+/// The contract every Feature Plugin must satisfy.
+world feature-plugin {
+    import host;
+    export run: func() -> string;
+}

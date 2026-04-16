@@ -90,19 +90,19 @@ ensembly/
 
 ## Step 4 — Native Core: Wasmtime Runtime & Feature Plugin Host
 
-- [ ] Add dependencies: `wasmtime`, `wasmtime-wasi`
-- [ ] Create a `PluginRuntime` struct that:
+- [x] Add dependencies: `wasmtime`, `wasmtime-wasi`
+- [x] Create a `PluginRuntime` struct that:
   - Holds a `wasmtime::Engine` (shared, reused across plugin loads)
   - Has `fn load_feature_plugin(wasm_path: &Path) -> Result<FeaturePlugin>`
-- [ ] Define the **Host Functions** that plugins can call (under the `ensembly_host` namespace).
+- [x] Define the **Host Functions** that plugins can call (under the `ensembly_host` namespace).
   For PoC, implement only the subset needed for the Hello World test:
-  - `host_log(level_ptr, level_len, msg_ptr, msg_len)` — writes to `tracing`/`println`
-  - `host_get_item(id_ptr, id_len) -> (ptr, len)` — returns hardcoded PoC item JSON
-- [ ] Wire host functions into the Wasmtime `Linker` before instantiating any plugin module
-- [ ] Create a `FeaturePlugin` struct with `fn call_run(&mut self) -> Result<String>` that
+  - `host_log` and `host_get_item` defined via WIT in `wit/feature-plugin.wit`
+  - Implemented via `ensembly::plugin::host::Host` trait on `PluginState`
+- [x] Wire host functions into the Wasmtime `Linker` before instantiating any plugin module
+- [x] Create a `FeaturePluginHandle` struct with `fn call_run(&mut self) -> Result<String>` that
   invokes the plugin's exported `run` function and returns its string result
-- [ ] Note on memory: use a helper to write strings into Wasm linear memory and pass
-  `(ptr, len)` pairs across the boundary; use a corresponding helper to read back results
+- [x] Note on memory: Component Model handles string passing natively via WIT — no manual
+  `(ptr, len)` helpers needed
 
 ---
 
