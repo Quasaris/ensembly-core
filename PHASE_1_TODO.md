@@ -61,17 +61,17 @@ ensembly/
 
 ## Step 3 — Native Core: Project Skeleton & Turso Init
 
-- [ ] Add dependencies to `ensembly-core`: `turso` (or `libsql`), `tokio` (async runtime),
+- [x] Add dependencies to `ensembly-core`: `turso` (or `libsql`), `tokio` (async runtime),
   `serde_json`, `ensembly-types`
-- [ ] On startup, determine the app data directory (e.g., `~/.local/share/ensembly/` on Linux,
+- [x] On startup, determine the app data directory (e.g., `~/.local/share/ensembly/` on Linux,
   `~/Library/Application Support/Ensembly/` on macOS via the `dirs` crate)
-- [ ] Create the directory structure on first run:
+- [x] Create the directory structure on first run:
   ```
   <data_dir>/
   ├── collections/     # Source-of-truth JSON files
   └── ensembly.db      # Turso index
   ```
-- [ ] Initialize Turso and run a bootstrap migration to create the `items` index table:
+- [x] Initialize Turso and run a bootstrap migration to create the `items` index table:
   ```sql
   CREATE TABLE IF NOT EXISTS items (
       id TEXT PRIMARY KEY,
@@ -82,9 +82,9 @@ ensembly/
       last_modified INTEGER NOT NULL
   );
   ```
-- [ ] Write a `DbManager` struct wrapping the Turso connection with `async fn get_item`,
+- [x] Write a `DbManager` struct wrapping the Turso connection with `async fn get_item`,
   `async fn upsert_item`, `async fn query_items`
-- [ ] Smoke-test: insert a hardcoded PoC item row on startup and assert it reads back correctly
+- [x] Smoke-test: insert a hardcoded PoC item row on startup and assert it reads back correctly
 
 ---
 
