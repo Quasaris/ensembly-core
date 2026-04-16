@@ -108,17 +108,17 @@ ensembly/
 
 ## Step 5 — Native Core: IPC Bridge (Backend Side)
 
-- [ ] Choose IPC mechanism for Dioxus ↔ Core communication.
+- [x] Choose IPC mechanism for Dioxus ↔ Core communication.
   **Decision:** Use Dioxus's built-in `use_coroutine` + `tokio::sync::mpsc` channels:
   the Shell and Core run in the same process for the PoC; the Bridge is an async channel pair.
-- [ ] Create an `IpcBridge` struct with:
+- [x] Create an `IpcBridge` struct with:
   - `tx: mpsc::Sender<IpcRequest>` — Shell sends requests into Core
   - `rx: mpsc::Receiver<IpcResponse>` — Core sends responses back to Shell
-- [ ] Implement a `async fn dispatch(request: IpcRequest) -> IpcResponse` handler in the Core:
+- [x] Implement a `async fn dispatch(request: IpcRequest) -> IpcResponse` handler in the Core:
   - `"PING"` action → responds with `{ status: Success, payload: { message: "pong from core" } }`
   - `"RUN_FEATURE_PLUGIN"` action → loads `hello-feature.wasm`, calls `run()`, returns result
   - Unknown actions → `{ status: Error, payload: { error_code: "UNKNOWN_ACTION" } }`
-- [ ] The Core's async `dispatch` loop runs as a `tokio::spawn`-ed task for the lifetime of the app
+- [x] The Core's async `dispatch` loop runs as a `tokio::spawn`-ed task for the lifetime of the app
 
 ---
 

@@ -1,8 +1,8 @@
 mod db;
+mod ipc;
 mod plugin_runtime;
 
 use db::{DbManager, ItemRow};
-use plugin_runtime::PluginRuntime;
 use std::fs;
 
 #[tokio::main]
@@ -58,19 +58,38 @@ async fn main() -> anyhow::Result<()> {
         None => panic!("Smoke-test failed: item not found after insert"),
     }
 
-    // Wasm integration test: load hello-feature and call run()
-    let wasm_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../target/wasm32-wasip2/debug/hello_feature.wasm");
-    println!("Loading plugin: {}", wasm_path.display());
+    // Spawn the IPC dispatch loop
+    let wasm_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../target/wasm32-wasip2/debug");
+    let (mut bridge, core_half) = ipc::create(wasm_dir);
+    tokio::spawn(core_half.run());
 
-    let runtime = PluginRuntime::new()?;
-    let mut plugin = runtime.load_feature_plugin(&wasm_path)?;
-    let result = plugin.call_run()?;
-    println!("Plugin returned: {result}");
+    // IPC smoke-test 1: PING
+    use ensembly_types::{IpcRequest, IpcRequestType};
+    bridge.request_tx.send(IpcRequest {
+        message_id: "msg-001".into(),
+        message_type: IpcRequestType::Request,
+        action: "PING".into(),
+        plugin_id: None,
+        payload: serde_json::json!(null),
+    }).await?;
+    let resp = bridge.response_rx.recv().await.expect("no response");
+    println!("PING response: {}", resp.payload);
+    assert_eq!(resp.payload["message"], "pong from core");
+    println!("IPC PING test passed!");
 
-    let parsed: serde_json::Value = serde_json::from_str(&result)?;
-    assert_eq!(parsed["greeting"], "Hello from the Feature Plugin!");
-    println!("Wasm integration test passed!");
+    // IPC smoke-test 2: RUN_FEATURE_PLUGIN
+    bridge.request_tx.send(IpcRequest {
+        message_id: "msg-002".into(),
+        message_type: IpcRequestType::Request,
+        action: "RUN_FEATURE_PLUGIN".into(),
+        plugin_id: Some("hello-feature".into()),
+        payload: serde_json::json!(null),
+    }).await?;
+    let resp = bridge.response_rx.recv().await.expect("no response");
+    println!("RUN_FEATURE_PLUGIN response: {}", resp.payload);
+    assert_eq!(resp.payload["greeting"], "Hello from the Feature Plugin!");
+    println!("IPC RUN_FEATURE_PLUGIN test passed!");
 
     Ok(())
 }
