@@ -2,6 +2,7 @@ mod db;
 mod plugin_runtime;
 
 use db::{DbManager, ItemRow};
+use plugin_runtime::PluginRuntime;
 use std::fs;
 
 #[tokio::main]
@@ -56,6 +57,20 @@ async fn main() -> anyhow::Result<()> {
         }
         None => panic!("Smoke-test failed: item not found after insert"),
     }
+
+    // Wasm integration test: load hello-feature and call run()
+    let wasm_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../target/wasm32-wasip2/debug/hello_feature.wasm");
+    println!("Loading plugin: {}", wasm_path.display());
+
+    let runtime = PluginRuntime::new()?;
+    let mut plugin = runtime.load_feature_plugin(&wasm_path)?;
+    let result = plugin.call_run()?;
+    println!("Plugin returned: {result}");
+
+    let parsed: serde_json::Value = serde_json::from_str(&result)?;
+    assert_eq!(parsed["greeting"], "Hello from the Feature Plugin!");
+    println!("Wasm integration test passed!");
 
     Ok(())
 }

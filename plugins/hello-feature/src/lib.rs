@@ -1,14 +1,22 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+#![allow(unsafe_op_in_unsafe_fn)] // suppresses warnings from wit-bindgen generated code
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+wit_bindgen::generate!({
+    world: "feature-plugin",
+    path: "../../wit",
+});
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+use crate::ensembly::plugin::host;
+
+struct Plugin;
+
+impl Guest for Plugin {
+    fn run() -> String {
+        host::log("INFO", "hello-feature plugin started");
+        serde_json::json!({
+            "greeting": "Hello from the Feature Plugin!"
+        })
+        .to_string()
     }
 }
+
+export!(Plugin);

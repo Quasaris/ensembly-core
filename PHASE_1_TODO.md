@@ -126,19 +126,13 @@ ensembly/
 
 *A headless backend Wasm plugin. Its sole job: call `host_log`, then return a greeting string.*
 
-- [ ] Set `crate-type = ["cdylib"]` in `Cargo.toml`
-- [ ] Add dependencies: `ensembly-types`, `serde_json`
-- [ ] Declare the external host functions the plugin imports:
-  ```rust
-  extern "C" {
-      fn host_log(level_ptr: *const u8, level_len: usize, msg_ptr: *const u8, msg_len: usize);
-  }
-  ```
-- [ ] Implement and export a `pub extern "C" fn run() -> *const u8` (or `(ptr, len)` pair) that:
-  1. Calls `host_log("INFO", "hello-feature plugin started")`
-  2. Returns the JSON string `{ "greeting": "Hello from the Feature Plugin!" }`
-- [ ] Build target: `wasm32-wasip2`
-- [ ] Confirm `cargo build --target wasm32-wasip2` produces `hello_feature.wasm`
+- [x] Set `crate-type = ["cdylib"]` in `Cargo.toml`
+- [x] Add dependencies: `wit-bindgen`, `ensembly-types`, `serde_json`
+- [x] Declare host interface via `wit_bindgen::generate!` (replaces raw `extern "C"` — Component Model handles ABI)
+- [x] Implement `Guest::run()` that calls `host::log` and returns greeting JSON
+- [x] Build target: `wasm32-wasip2`
+- [x] Confirmed `cargo build -p hello-feature --target wasm32-wasip2` produces `hello_feature.wasm`
+- [x] **Integration verified**: host loaded plugin via Wasmtime, `host_log` fired, greeting JSON returned correctly
 
 ---
 
