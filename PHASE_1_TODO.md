@@ -39,15 +39,15 @@ ensembly/
 
 *Purpose: Both the Core and all plugins depend on this crate to ensure identical serialization shapes across the Wasm boundary.*
 
-- [ ] Add dependencies: `serde` (with `derive` feature), `serde_json`
-- [ ] Define the **Base Item Schema** structs:
+- [x] Add dependencies: `serde` (with `derive` feature), `serde_json`
+- [x] Define the **Base Item Schema** structs:
   ```
   EnsemblyItem { system: SystemMeta, core: CoreData, attributes: HashMap<String, Value>, relations: HashMap<String, Vec<Relation>> }
   SystemMeta { id, collection_id, schema_version, created_at, updated_at }
   CoreData { title, primary_image: Option<String>, tags: Vec<String>, description }
   Relation { relation_type, target_id, target_collection }
   ```
-- [ ] Define the **IPC Bridge** message structs:
+- [x] Define the **IPC Bridge** message structs:
   ```
   IpcRequest { message_id, r#type: "REQUEST", action, plugin_id, payload: Value }
   IpcResponse { message_id, r#type: "RESPONSE", status: ResponseStatus, payload: Value }
@@ -55,7 +55,7 @@ ensembly/
   ResponseStatus { Success, Error }
   ```
 - [ ] Publish crate internally so `ensembly-core`, `ensembly-shell`, and both plugins can depend on it with `path = "../../crates/ensembly-types"`
-- [ ] Write unit tests confirming round-trip JSON serialization of each struct
+- [x] Write unit tests confirming round-trip JSON serialization of each struct
 
 ---
 
