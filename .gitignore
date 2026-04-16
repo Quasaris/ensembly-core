@@ -1,0 +1,16 @@
+# Rust build artifacts
+/target/
+
+# Cargo.lock is kept (binary workspace)
+
+# wasm-bindgen generated output (any plugin)
+plugins/*/pkg/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

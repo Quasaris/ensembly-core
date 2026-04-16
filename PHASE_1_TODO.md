@@ -22,16 +22,16 @@ ensembly/
 
 ## Step 1 — Rust Workspace Bootstrap
 
-- [ ] Create `Cargo.toml` at the repo root declaring a Cargo workspace with members:
+- [x] Create `Cargo.toml` at the repo root declaring a Cargo workspace with members:
   `crates/*` and `plugins/*`
-- [ ] Run `cargo new --lib crates/ensembly-types`
-- [ ] Run `cargo new --bin crates/ensembly-core`
-- [ ] Run `cargo new --bin crates/ensembly-shell`
-- [ ] Run `cargo new --lib plugins/hello-feature`
-- [ ] Run `cargo new --lib plugins/hello-display`
-- [ ] Add `.cargo/config.toml` specifying `wasm32-wasip2` as the default target for the
+- [x] Run `cargo new --lib crates/ensembly-types`
+- [x] Run `cargo new --bin crates/ensembly-core`
+- [x] Run `cargo new --bin crates/ensembly-shell`
+- [x] Run `cargo new --lib plugins/hello-feature`
+- [x] Run `cargo new --lib plugins/hello-display`
+- [x] Add `.cargo/config.toml` specifying `wasm32-wasip2` as the default target for the
   `plugins/hello-feature` crate and `wasm32-unknown-unknown` for `plugins/hello-display`
-- [ ] Verify `cargo build` compiles the workspace without errors
+- [x] Verify `cargo build` compiles the workspace without errors
 
 ---
 
