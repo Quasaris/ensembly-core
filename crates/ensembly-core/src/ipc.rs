@@ -24,6 +24,15 @@ pub struct CoreBridgeHalf {
     wasm_dir: PathBuf,
 }
 
+impl IpcBridge {
+    /// Send a request and wait for the matching response.
+    /// Returns `None` if the core has shut down.
+    pub async fn send_request(&mut self, req: IpcRequest) -> Option<IpcResponse> {
+        self.request_tx.send(req).await.ok()?;
+        self.response_rx.recv().await
+    }
+}
+
 /// Create a linked (IpcBridge, CoreBridgeHalf) pair.
 /// `wasm_dir` is where compiled plugin `.wasm` files live.
 pub fn create(wasm_dir: PathBuf) -> (IpcBridge, CoreBridgeHalf) {

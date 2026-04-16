@@ -140,9 +140,9 @@ ensembly/
 
 *The main window. For PoC, it just needs to exist and communicate with the Core.*
 
-- [ ] Add dependencies: `dioxus`, `dioxus-desktop`, `tokio`, `serde_json`, `ensembly-types`
-- [ ] Bootstrap a `dioxus::launch(App)` entry point
-- [ ] Build the **App Shell layout** using Dioxus RSX:
+- [x] Add dependencies: `dioxus` (with `desktop` feature), `tokio`, `serde_json`, `ensembly-types`, `ensembly-core`
+- [x] Bootstrap a `dioxus::launch(App)` entry point
+- [x] Build the **App Shell layout** using Dioxus RSX:
   ```
   ┌──────────┬──────────────────────────────┐
   │ Sidebar  │  <div id="plugin-canvas">    │
@@ -152,12 +152,12 @@ ensembly/
   ```
   - Sidebar: static list of placeholder room names ("Library", "Records")
   - Canvas: a styled `div` that will host Display Plugin output
-- [ ] Apply PoC inline styles matching the Design System:
+- [x] Apply PoC inline styles matching the Design System:
   - Background: Archive Cream `#F6F4F0`
   - Sidebar border: `1px solid rgba(23,23,23,0.2)`
   - Font: `system-ui` (sans-serif fallback until fonts are bundled)
-- [ ] Wire up the `IpcBridge` channels (passed in via Dioxus context or global state)
-- [ ] Add a **"Run PoC Test" button** (Terracotta, top-right of canvas) that:
+- [x] Wire up the `IpcBridge` via `OnceLock` statics; core dispatch loop spawned via `use_hook` on first render
+- [x] Add a **"Run PoC Test" button** (Terracotta, top-right of canvas) that:
   1. Sends an `IpcRequest` with `action: "RUN_FEATURE_PLUGIN"` over the bridge
   2. Awaits the `IpcResponse`
   3. Stores the response payload in a `use_signal` reactive state

@@ -4,3 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+ensembly-core = { path = "../ensembly-core" }
+ensembly-types = { path = "../ensembly-types" }
+dioxus = { version = "0.6", features = ["desktop"] }
+tokio = { version = "1", features = ["full"] }
+serde_json = "1"
