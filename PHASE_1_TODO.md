@@ -193,40 +193,31 @@ and `web-sys` — must be served into the Dioxus WebView and directly manipulate
 `#plugin-canvas`. This is the core architectural feasibility test.*
 
 ### 8a — Build the Wasm Binary
-- [ ] Set `crate-type = ["cdylib"]` in `Cargo.toml`
-- [ ] Add dependencies: `wasm-bindgen`, `web-sys` (features: `Window`, `Document`, `Element`,
-  `HtmlElement`, `Node`), `serde-wasm-bindgen`, `ensembly-types`
-- [ ] Build target: `wasm32-unknown-unknown`
-- [ ] Implement a `#[wasm_bindgen]`-exported `render(data: JsValue)` function that:
-  1. Calls `web_sys::window()?.document()?.get_element_by_id("plugin-canvas")`
-  2. Creates a child `div` with a greeting card layout (greeting text, timestamp, plugin label)
-  3. Applies inline styles: Terracotta border `#C84B31`, Archive Cream background `#F6F4F0`
-  4. Appends it to the canvas element
-- [ ] Run `wasm-bindgen --target web` to generate the JS glue file (`hello_display.js`) alongside
-  the `.wasm` binary. Add this as a build step in the workspace `Makefile` or `build.rs`.
+- [x] Set `crate-type = ["cdylib"]` in `Cargo.toml`
+- [x] Add dependencies: `wasm-bindgen`, `web-sys`, `js-sys`
+- [x] Build target: `wasm32-unknown-unknown`
+- [x] Implement `#[wasm_bindgen] fn render(data: JsValue)` — finds `#plugin-canvas`, appends greeting card
+- [x] `wasm-bindgen --target web` generates `hello_display.js` + `hello_display_bg.wasm` in `plugins/hello-display/pkg/`
 
 ### 8b — Load the Plugin in the WebView
-- [ ] Place (or serve via custom protocol) both `hello_display_bg.wasm` and `hello_display.js`
-  where the WebView can reach them
-- [ ] When the Shell receives a successful `IpcResponse`, use `dioxus_desktop::use_eval` to
-  inject and execute the following JS sequence in the WebView:
+- [x] **Option B chosen:** `use_asset_handler("plugins", …)` serves `pkg/` files at
+  `dioxus://localhost/plugins/<filename>` — same-origin, no CORS issues
+- [x] After successful `IpcResponse`, shell calls `document::eval(js)` with:
   ```js
-  import init, { render } from '<plugin_url>/hello_display.js';
-  await init();
-  render(JSON.parse('<response_payload_json>'));
+  (async () => {
+      const { default: init, render } = await import('/plugins/hello_display.js');
+      await init();
+      render(JSON.parse(payload));
+  })();
   ```
-- [ ] Confirm there are no Content Security Policy (CSP) blocks on the Dioxus WebView that
-  prevent dynamic module loading; disable or relax CSP for PoC if needed and document it
+- [ ] **Runtime verification pending** — CSP and DOM isolation checkpoints require the app running
 
 ### 8c — Feasibility Checkpoints
 These must all pass before Step 8 is considered complete:
 - [ ] The `.wasm` binary loads without errors in the WebView's JS console
-- [ ] `web-sys` DOM calls execute successfully (no "document is undefined" or similar errors
-  that would indicate the Wasm context lacks access to the live DOM)
-- [ ] The greeting card visually appears inside `#plugin-canvas` — not adjacent to it, not in a
-  shadow DOM, but as a direct child of the element owned by Dioxus
-- [ ] Dioxus's own Virtual DOM is not corrupted or re-rendered after the plugin mutates the DOM
-  (the Shell's sidebar and button must still be functional after the plugin renders)
+- [ ] `web-sys` DOM calls execute successfully (no "document is undefined" or similar errors)
+- [ ] The greeting card visually appears inside `#plugin-canvas` as a direct child
+- [ ] Dioxus VDOM is not corrupted after plugin mutates DOM (sidebar and button remain functional)
 
 ---
 
